@@ -5,7 +5,6 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.GridPane;
 import javafx.scene.control.*;
-import javafx.scene.paint.*;
 
 public class AppGUI extends Application {
     @Override
