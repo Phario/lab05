@@ -5,4 +5,5 @@ module diner {
     requires javafx.graphics;
     exports pl.pwr.ite.dynak.gui;
     exports pl.pwr.ite.dynak.threads;
+    exports pl.pwr.ite.dynak.main;
 }
