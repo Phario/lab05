@@ -48,7 +48,7 @@ public class Diner {
         this.checkoutQueue1 = new LinkedBlockingQueue<>(maxQueueSize);
         this.checkoutQueue2 = new LinkedBlockingQueue<>(maxQueueSize);
         this.checkoutQueue3 = new LinkedBlockingQueue<>(maxQueueSize);
-        this.table = new Client[40];
+        this.table = new Client[30];
     }
     public void startSimulation() throws InterruptedException {
         this.foodQueueList.add(foodQueue0);
@@ -83,7 +83,7 @@ public class Diner {
         clerkThreeThread.start();
         for (int i = 0; i < maxQueueSize; i++) {
             String name = String.valueOf((char)('A' + i));
-            Client exampleClient = new Client(
+            Client client = new Client(
                     name,
                     this.tickSpeed,
                     this.maxRandomTickSpeed,
@@ -91,11 +91,9 @@ public class Diner {
                     this.foodQueueList,
                     this.checkoutQueueList,
                     this.table);
-            Thread exampleThread = new Thread(exampleClient);
-            exampleThread.start();
-            TimeUnit.MILLISECONDS.sleep(100);
+            Thread clientThread = new Thread(client);
+            clientThread.start();
         }
-
     }
     public static void main(String[] args) {
         try {

@@ -17,7 +17,7 @@ public class Cook extends Person implements Runnable{
         this.cookQueue = cookQueue;
     }
     private void giveFood(BlockingQueue<Client> cookQueue) throws InterruptedException {
-        Thread.sleep(tickSpeed + ThreadLocalRandom.current().nextInt(maxRandomTickSpeed));
+        Thread.sleep(tickSpeed/10 + ThreadLocalRandom.current().nextInt(maxRandomTickSpeed));
         Client client = cookQueue.take();
         client.setHasFood();
         logger.info("Food given to client {}", client.getName());

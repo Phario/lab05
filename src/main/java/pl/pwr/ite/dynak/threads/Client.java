@@ -46,8 +46,9 @@ public class Client extends Person implements Runnable{
         queue.put(this);
     }
     private BlockingQueue<Client> chooseLine(List<BlockingQueue<Client>> queueList) throws InterruptedException {
+        Thread.sleep(ThreadLocalRandom.current().nextInt(100));
         int queueId = 0;
-        int minQueueSize = 30; //TODO: remove placeholder
+        int minQueueSize = Integer.MAX_VALUE;
         int tempQueueSize;
         for (BlockingQueue<Client> queue : queueList) {
             if (!queue.isEmpty()) {
@@ -85,21 +86,35 @@ public class Client extends Person implements Runnable{
             notify();
         }
     }
+    private void finishCycle(Client[] table) throws InterruptedException {
+        for (int i = 0; i < table.length; i++) {
+            if (table[i] != null) {
+                if (table[i].getName().equals(name)) {
+                    table[i] = null;
+                    break;
+                }
+            }
+        }
+    }
     @Override
     public void run() {
         try {
-        logger.info("Client {} started", name);
-        getInLine(this.primaryQueue); //main queue
-        logger.info("Client {} queued into main queue", name);
-        getInLine(chooseLine(this.foodQueueList)); //serving queue
-        logger.info("Client {} queued into food queue", name);
-        waitForFood();
-        getInLine(chooseLine(this.checkoutQueueList)); //checkout queue
-        logger.info("Client {} queued into checkout queue", name);
-        waitForPayment();
-        sitDown(this.table);
-        logger.info("Client {} sat at the table", name);
-        eat();
+            logger.info("Client {} started", name);
+            getInLine(this.primaryQueue); //main queue
+            logger.info("Client {} queued into main queue", name);
+            Thread.sleep(100 + tickSpeed + ThreadLocalRandom.current().nextInt(maxRandomTickSpeed));
+            this.primaryQueue.take();
+            getInLine(chooseLine(this.foodQueueList)); //serving queue
+            logger.info("Client {} queued into food queue", name);
+            waitForFood();
+            getInLine(chooseLine(this.checkoutQueueList)); //checkout queue
+            logger.info("Client {} queued into checkout queue", name);
+            waitForPayment();
+            sitDown(this.table);
+            logger.info("Client {} sat at the table", name);
+            eat();
+            Thread.sleep(tickSpeed + ThreadLocalRandom.current().nextInt(maxRandomTickSpeed));
+            finishCycle(table);
         } catch (InterruptedException e) {
             logger.error(e.getMessage());
             Thread.currentThread().interrupt();

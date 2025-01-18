@@ -16,8 +16,13 @@ public class Queue extends StackPane {
         rectangle.setArcHeight(20);
         this.getChildren().addAll(rectangle);
     }
-
-    public void setColor(Color color) {
-        rectangle.setFill(color);
+    public Queue() {
+        rectangle = new Rectangle(600, 30);
+        rectangle.setFill(Color.GREY);
+        rectangle.setStroke(Color.BLACK);
+        rectangle.setStrokeWidth(2);
+        rectangle.setArcWidth(20);
+        rectangle.setArcHeight(20);
+        this.getChildren().addAll(rectangle);
     }
 }

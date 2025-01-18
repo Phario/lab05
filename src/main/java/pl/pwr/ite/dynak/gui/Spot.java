@@ -24,8 +24,17 @@ public class Spot extends StackPane {
         this.getChildren().addAll(rectangle, letter);
         this.setStyle("-fx-alignment: center;");
     }
-
-    public void setColor(Color color) {
-        rectangle.setFill(color);
+    public Spot(String initialLetter) {
+        rectangle = new Rectangle(20, 20);
+        rectangle.setFill(Color.LIGHTGREEN);
+        rectangle.setStroke(Color.LIGHTGRAY);
+        rectangle.setStrokeWidth(20/15);
+        rectangle.setArcWidth(20);
+        rectangle.setArcHeight(20);
+        letter = new Text(initialLetter);
+        letter.setFont(Font.font(10));
+        letter.setFill(Color.WHITE);
+        this.getChildren().addAll(rectangle, letter);
+        this.setStyle("-fx-alignment: center;");
     }
 }
