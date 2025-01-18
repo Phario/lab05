@@ -2,7 +2,6 @@ package pl.pwr.ite.dynak.threads;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -18,7 +17,9 @@ public class Clerk extends Person implements Runnable {
     }
     private void checkout(BlockingQueue<Client> checkoutQueue) throws InterruptedException {
         Thread.sleep(tickSpeed + ThreadLocalRandom.current().nextInt(maxRandomTickSpeed));
-        logger.info("Client has food of type {}",checkoutQueue.take().getFoodType());
+        Client client = checkoutQueue.take();
+        logger.info("Client {} has food type {}",client.getName() , client.setHasPaid());
+        logger.info("Checkout completed for client {}",client.getName());
     }
     @Override
     public void run() {

@@ -18,13 +18,16 @@ public class Cook extends Person implements Runnable{
     }
     private void giveFood(BlockingQueue<Client> cookQueue) throws InterruptedException {
         Thread.sleep(tickSpeed + ThreadLocalRandom.current().nextInt(maxRandomTickSpeed));
-        cookQueue.take().setHasFood();
+        Client client = cookQueue.take();
+        client.setHasFood();
+        logger.info("Food given to client {}", client.getName());
     }
     @Override
     public void run() {
         while(simulationRunning) {
             try {
                 giveFood(cookQueue);
+
             } catch (InterruptedException e) {
                 logger.error(e.getMessage());
                 Thread.currentThread().interrupt();

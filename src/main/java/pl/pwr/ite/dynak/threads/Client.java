@@ -10,9 +10,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Client extends Person implements Runnable{
     private static final Logger logger = LoggerFactory.getLogger(Client.class);
     private boolean hasFood;
+    private boolean hasPaid;
     private int foodType;
     private BlockingQueue<Client> primaryQueue;
-    private BlockingQueue<Client> secondaryQueue;
     private List<BlockingQueue<Client>> foodQueueList;
     private List<BlockingQueue<Client>> checkoutQueueList;
     private Client[] table;
@@ -20,7 +20,6 @@ public class Client extends Person implements Runnable{
                   int tickSpeed,
                   int maxRandomTickSpeed,
                   BlockingQueue<Client> primaryQueue,
-                  BlockingQueue<Client> secondaryQueue,
                   List<BlockingQueue<Client>> foodQueueList,
                   List<BlockingQueue<Client>> checkoutQueueList,
                   Client[] table)
@@ -30,9 +29,18 @@ public class Client extends Person implements Runnable{
         this.foodQueueList = foodQueueList;
         this.checkoutQueueList = checkoutQueueList;
         this.primaryQueue = primaryQueue;
-        this.secondaryQueue = secondaryQueue;
         this.table = table;
         this.maxRandomTickSpeed = maxRandomTickSpeed;
+    }
+    private synchronized void waitForFood() throws InterruptedException {
+        while (!this.hasFood) {
+            wait();
+        }
+    }
+    private synchronized void waitForPayment() throws InterruptedException {
+        while (!this.hasPaid) {
+            wait();
+        }
     }
     private void getInLine(BlockingQueue<Client> queue) throws InterruptedException {
         queue.put(this);
@@ -64,22 +72,37 @@ public class Client extends Person implements Runnable{
     private void eat() throws InterruptedException {
         Thread.sleep(tickSpeed + ThreadLocalRandom.current().nextInt(maxRandomTickSpeed));
     }
-    public void setHasFood() {
+    public synchronized void setHasFood() {
         this.hasFood = true;
         this.foodType = ThreadLocalRandom.current().nextInt(0, 5);
+        notify();
+    }
+    public synchronized int setHasPaid() {
+        try {
+            this.hasPaid = true;
+            return foodType;
+        } finally {
+            notify();
+        }
     }
     @Override
     public void run() {
         try {
+        logger.info("Client {} started", name);
         getInLine(this.primaryQueue); //main queue
+        logger.info("Client {} queued into main queue", name);
         getInLine(chooseLine(this.foodQueueList)); //serving queue
+        logger.info("Client {} queued into food queue", name);
+        waitForFood();
         getInLine(chooseLine(this.checkoutQueueList)); //checkout queue
+        logger.info("Client {} queued into checkout queue", name);
+        waitForPayment();
         sitDown(this.table);
+        logger.info("Client {} sat at the table", name);
         eat();
         } catch (InterruptedException e) {
             logger.error(e.getMessage());
             Thread.currentThread().interrupt();
         }
-        logger.info("Client {} started", name);
     }
 }
