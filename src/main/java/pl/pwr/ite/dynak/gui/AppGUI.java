@@ -17,7 +17,8 @@ import javafx.util.Duration;
 import pl.pwr.ite.dynak.main.Diner;
 import pl.pwr.ite.dynak.threads.Client;
 import java.util.concurrent.BlockingQueue;
-
+//launch command:
+//C:\Users\Phario>java --module-path "C:\javafx-sdk-21.0.5\lib" --add-modules javafx.controls,javafx.fxml -jar C:\Users\Phario\IdeaProjects\lab05\target\lab05-1.0-SNAPSHOT.jar
 public class AppGUI extends Application {
     private Diner diner;
     VBox mainVBox = new VBox();
