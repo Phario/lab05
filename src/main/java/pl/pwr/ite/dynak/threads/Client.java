@@ -113,7 +113,7 @@ public class Client extends Person implements Runnable{
             sitDown(this.table);
             logger.info("Client {} sat at the table", name);
             eat();
-            Thread.sleep(tickSpeed + ThreadLocalRandom.current().nextInt(maxRandomTickSpeed));
+            Thread.sleep(3*tickSpeed + ThreadLocalRandom.current().nextInt(maxRandomTickSpeed));
             finishCycle(table);
         } catch (InterruptedException e) {
             logger.error(e.getMessage());

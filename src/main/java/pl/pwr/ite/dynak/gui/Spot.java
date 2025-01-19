@@ -37,4 +37,14 @@ public class Spot extends StackPane {
         this.getChildren().addAll(rectangle, letter);
         this.setStyle("-fx-alignment: center;");
     }
+    public Spot() {
+        rectangle = new Rectangle(20, 20);
+        rectangle.setFill(Color.DARKGREEN);
+        rectangle.setStroke(Color.LIGHTGRAY);
+        rectangle.setStrokeWidth(20/15);
+        rectangle.setArcWidth(20);
+        rectangle.setArcHeight(20);
+        this.getChildren().addAll(rectangle);
+        this.setStyle("-fx-alignment: center;");
+    }
 }

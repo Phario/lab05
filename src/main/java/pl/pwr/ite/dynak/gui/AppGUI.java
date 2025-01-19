@@ -17,9 +17,11 @@ import javafx.util.Duration;
 import pl.pwr.ite.dynak.main.Diner;
 import pl.pwr.ite.dynak.threads.Client;
 import java.util.concurrent.BlockingQueue;
+import java.util.Random;
 //launch command:
 //C:\Users\Phario>java --module-path "C:\javafx-sdk-21.0.5\lib" --add-modules javafx.controls,javafx.fxml -jar C:\Users\Phario\IdeaProjects\lab05\target\lab05-1.0-SNAPSHOT.jar
 public class AppGUI extends Application {
+    Random random = new Random();
     private Diner diner;
     VBox mainVBox = new VBox();
     VBox secondaryVBox = new VBox();
@@ -76,11 +78,15 @@ public class AppGUI extends Application {
             tableOneGP.getChildren().clear();
             tableZeroGP.add(queueZeroBG, 0,0,30,1);
             tableOneGP.add(queueOneBG, 0,0,30,1);
+            for (int i = 0; i< table.length-1; i++) {
+                tableZeroGP.add(new Spot(), i,0);
+                tableOneGP.add(new Spot(), i,0);
+            }
             for (int i = 0; i < table.length; i++) {
                 if (table[i] != null) {
-                    if (i<5) {
-                        tableZeroGP.add(new Spot(table[i].getName()), i, 0);
-                    } else tableOneGP.add(new Spot(table[i].getName()), i, 0);
+                    if (i%2 == 0 && i>0) {
+                        tableZeroGP.add(new Spot(table[i].getName()), i/2-1, 0);
+                    } else tableOneGP.add(new Spot(table[i].getName()), i/2, 0);
                 }
             }
         });
@@ -131,6 +137,7 @@ public class AppGUI extends Application {
         secondaryVBox.getChildren().addAll(primaryQueueGP, foodQueue0GP,foodQueue1GP, checkoutQueue0GP, checkoutQueue1GP, checkoutQueue2GP, checkoutQueue3GP);
         secondaryHBox.getChildren().addAll(staffVBox, secondaryVBox, tablesVB);
         mainHBox.getChildren().add(secondaryHBox);
+        tableZeroGP.setGridLinesVisible(true);
         //Button setup
         startButton.setOnAction(e -> {
             this.diner = new Diner(Integer.parseInt(maxClientsField.getText()), (int)timeSlider.getValue(),(int)randomTimeSlider.getValue());
