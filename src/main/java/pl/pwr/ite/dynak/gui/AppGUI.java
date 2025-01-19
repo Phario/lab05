@@ -17,11 +17,9 @@ import javafx.util.Duration;
 import pl.pwr.ite.dynak.main.Diner;
 import pl.pwr.ite.dynak.threads.Client;
 import java.util.concurrent.BlockingQueue;
-import java.util.Random;
 //launch command:
 //C:\Users\Phario>java --module-path "C:\javafx-sdk-21.0.5\lib" --add-modules javafx.controls,javafx.fxml -jar C:\Users\Phario\IdeaProjects\lab05\target\lab05-1.0-SNAPSHOT.jar
 public class AppGUI extends Application {
-    Random random = new Random();
     private Diner diner;
     VBox mainVBox = new VBox();
     VBox secondaryVBox = new VBox();
@@ -141,24 +139,20 @@ public class AppGUI extends Application {
         //Button setup
         startButton.setOnAction(e -> {
             this.diner = new Diner(Integer.parseInt(maxClientsField.getText()), (int)timeSlider.getValue(),(int)randomTimeSlider.getValue());
-            try {
-                diner.startSimulation();
-                Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.1), event -> {
-                    updateQueue(diner.getPrimaryQueue(), primaryQueueGP, primaryQueue);
-                    updateQueue(diner.getFoodQueue0(), foodQueue0GP, foodQueue0);
-                    updateQueue(diner.getFoodQueue1(), foodQueue1GP, foodQueue1);
-                    updateQueue(diner.getCheckoutQueue0(), checkoutQueue0GP, checkoutQueue0);
-                    updateQueue(diner.getCheckoutQueue1(), checkoutQueue1GP, checkoutQueue1);
-                    updateQueue(diner.getCheckoutQueue2(), checkoutQueue2GP, checkoutQueue2);
-                    updateQueue(diner.getCheckoutQueue3(), checkoutQueue3GP, checkoutQueue3);
-                    updateTable(diner.getTable(), tableZeroGP, tableOneGP, tableZeroBG, tableOneBG);
-                }
-                ));
-                timeline.setCycleCount(Animation.INDEFINITE);
-                timeline.play();
-            } catch (InterruptedException ex) {
-                Thread.currentThread().interrupt();
+            diner.startSimulation();
+            Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.05), event -> {
+                updateQueue(diner.getPrimaryQueue(), primaryQueueGP, primaryQueue);
+                updateQueue(diner.getFoodQueue0(), foodQueue0GP, foodQueue0);
+                updateQueue(diner.getFoodQueue1(), foodQueue1GP, foodQueue1);
+                updateQueue(diner.getCheckoutQueue0(), checkoutQueue0GP, checkoutQueue0);
+                updateQueue(diner.getCheckoutQueue1(), checkoutQueue1GP, checkoutQueue1);
+                updateQueue(diner.getCheckoutQueue2(), checkoutQueue2GP, checkoutQueue2);
+                updateQueue(diner.getCheckoutQueue3(), checkoutQueue3GP, checkoutQueue3);
+                updateTable(diner.getTable(), tableZeroGP, tableOneGP, tableZeroBG, tableOneBG);
             }
+            ));
+            timeline.setCycleCount(Animation.INDEFINITE);
+            timeline.play();
         });
     }
 

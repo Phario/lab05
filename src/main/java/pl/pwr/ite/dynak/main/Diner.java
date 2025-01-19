@@ -1,8 +1,5 @@
 package pl.pwr.ite.dynak.main;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.pwr.ite.dynak.threads.Clerk;
@@ -10,9 +7,10 @@ import pl.pwr.ite.dynak.threads.Client;
 import pl.pwr.ite.dynak.threads.Cook;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 @lombok.Getter
 @lombok.Setter
 public class Diner {
@@ -32,7 +30,7 @@ public class Diner {
     ArrayList<BlockingQueue<Client>> foodQueueList;
     ArrayList<BlockingQueue<Client>> checkoutQueueList;
     Client[] table;
-
+    private final Map<String, Thread> clientThreads = new ConcurrentHashMap<>();
     public Diner(int maxQueueSize, int tickSpeed, int maxRandomTickSpeed) {
         this.maxQueueSize = maxQueueSize;
         this.tickSpeed = tickSpeed;
@@ -50,7 +48,7 @@ public class Diner {
         this.checkoutQueue3 = new LinkedBlockingQueue<>(maxQueueSize);
         this.table = new Client[30];
     }
-    public void startSimulation() throws InterruptedException {
+    private void startStaff(){
         this.foodQueueList.add(foodQueue0);
         this.foodQueueList.add(foodQueue1);
         this.checkoutQueueList.add(checkoutQueue0);
@@ -81,28 +79,59 @@ public class Diner {
         clerkOneThread.start();
         clerkTwoThread.start();
         clerkThreeThread.start();
+    }
+    private void startMultipleClients() {
         for (int i = 0; i < maxQueueSize; i++) {
-            String name = String.valueOf((char)('A' + i));
-            Client client = new Client(
-                    name,
-                    this.tickSpeed,
-                    this.maxRandomTickSpeed,
-                    this.primaryQueue,
-                    this.foodQueueList,
-                    this.checkoutQueueList,
-                    this.table);
-            Thread clientThread = new Thread(client);
-            clientThread.start();
+            String name = String.valueOf((char) ('A' + i));
+            startClient(name);
         }
     }
+    private void restartClients() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    for (Map.Entry<String, Thread> entry : clientThreads.entrySet()) {
+                        String name = entry.getKey();
+                        Thread thread = entry.getValue();
+
+                        if (!thread.isAlive()) {
+                            logger.info("Restarting client thread: {}", name);
+                            startClient(name);
+                        }
+                    }
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    logger.error(e.getMessage());
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }).start();
+    }
+
+    private void startClient(String name) {
+        Client client = new Client(
+                name,
+                this.tickSpeed,
+                this.maxRandomTickSpeed,
+                this.primaryQueue,
+                this.foodQueueList,
+                this.checkoutQueueList,
+                this.table);
+        Thread newThread = new Thread(client);
+        newThread.setName(name);
+        clientThreads.put(name, newThread);
+        newThread.start();
+    }
+
+    public void startSimulation() {
+        startStaff();
+        startMultipleClients();
+        restartClients();
+    }
     public static void main(String[] args) {
-        try {
-            Diner diner = new Diner(20, 1000, 500);
-            diner.startSimulation();
-        } catch (InterruptedException e) {
-            logger.error(e.getMessage());
-            Thread.currentThread().interrupt();
-        }
+        Diner diner = new Diner(20, 1000, 500);
+        diner.startSimulation();
     }
 
 }
